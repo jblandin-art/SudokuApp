@@ -1,0 +1,253 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-geist-mono);
+  --font-poppins: var(--font-poppins);
+  --font-playfair: var(--font-playfair);
+  --font-heading: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+
+.stick {
+  @apply my-2 p-0;
+  @apply inline-block;
+  width: auto;
+  height: auto;
+}
+
+#game-board button{
+  @apply cursor-pointer;
+}
+
+.nim-loading-flash {
+  animation: nim-loading-flash 1.8s ease-in-out infinite;
+  will-change: opacity, filter;
+}
+
+/* Hide mobile-only buttons by default (desktop) */
+#ai-turn-button-mobile,
+#remove-stick-1-mobile,
+#remove-stick-2-mobile,
+#remove-stick-3-mobile,
+#remove-stick-4-mobile {
+  display: none;
+}
+
+@keyframes nim-loading-flash {
+  0%, 100% {
+    opacity: 0.5;
+    filter: brightness(0.9);
+  }
+  50% {
+    opacity: 1;
+    filter: brightness(1.1);
+  }
+}
+
+@media (max-width: 640px) {
+
+  /* Hide desktop remove buttons on small screens and show the mobile variants */
+  #ai-turn-button {
+    display: none !important;
+  }
+
+  #remove-stick-1,
+  #remove-stick-2,
+  #remove-stick-3,
+  #remove-stick-4 {
+    display: none !important;
+  }
+
+  #remove-stick-1-mobile,
+  #remove-stick-2-mobile,
+  #remove-stick-3-mobile,
+  #remove-stick-4-mobile {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6rem;
+    margin-left: auto;
+    width: 8%;
+    height: 7vh;
+    padding-right: 1rem;
+  }
+
+  #game-board {
+    margin: auto 50;
+  }
+
+  #ai-turn-button,
+  #remove-stick-1,
+  #remove-stick-2,
+  #remove-stick-3,
+  #remove-stick-4,
+  #remove-stick-1-mobile,
+  #remove-stick-2-mobile,
+  #remove-stick-3-mobile,
+  #remove-stick-4-mobile {
+    padding: 0.75rem 0.35rem;
+    writing-mode: vertical-rl;
+    align-items: center;
+    justify-content: center;
+    text-orientation: upright;
+    z-index: 50;
+  }
+  
+  #remove-stick-1-mobile,
+  #remove-stick-2-mobile,
+  #remove-stick-3-mobile,
+  #remove-stick-4-mobile {
+    padding: 0.75rem 0.35rem;
+    writing-mode: vertical-rl;
+    align-items: center;
+    justify-content: center;
+    text-orientation: upright;
+    z-index: 50;
+  }
+
+   #ai-turn-button-mobile {
+    height: 10%;
+    padding: 0.75rem 0.35rem;
+    align-items: center;
+    justify-content: center;
+    width: 15vh;
+    z-index: 50;
+    margin: 0 auto;
+    display: block !important;
+    margin-bottom: 30px;
+   }
+
+   #rows-container {
+    width: 100%;
+   }
+   #game-board {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+   }
+}
+
+
