@@ -34,17 +34,18 @@ const siteUrl = "https://webpages.charlotte.edu/jblandin";
 
 export const metadata = {
   metadataBase: new URL(siteUrl),
-  title: "Josiah Blanding - Full Stack Developer",
+  title: "Sudoku Solver - Free Online Sudoku Game",
   description:
-    "Full stack software developer specializing in React, Next.js, and modern web development. Explore my portfolio and projects.",
+    "Play Sudoku online for free! Challenge yourself with easy, medium, and expert difficulty levels. The classic number puzzle game is now available in your browser.",
   keywords: [
-    "Josiah Blanding",
-    "software developer",
-    "full stack",
-    "React",
-    "Next.js",
-    "JavaScript",
-    "web development",
+    "Sudoku",
+    "puzzle game",
+    "online Sudoku",
+    "free Sudoku",
+    "number puzzle",
+    "logic game",
+    "brain game",
+    "daily puzzle",
   ],
   authors: [{ name: "Josiah Blanding" }],
   creator: "Josiah Blanding",
@@ -60,25 +61,25 @@ export const metadata = {
     },
   },
   openGraph: {
-    title: "Josiah Blanding - Full Stack Developer",
+    title: "Sudoku Solver - Free Online Sudoku Game",
     description:
-      "Explore my portfolio of web development projects and experience",
+      "Play Sudoku online for free! Challenge yourself with easy, medium, and expert difficulty levels.",
     url: "/",
-    siteName: "Josiah Blanding Portfolio",
+    siteName: "Sudoku Solver",
     images: [
       {
         url: "/headshotExtended.jpg",
         width: 1689,
         height: 1127,
-        alt: "Josiah Blanding headshot",
+        alt: "Sudoku game interface",
       },
     ],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Josiah Blanding - Full Stack Developer",
-    description: "Check out my portfolio and projects",
+    title: "Sudoku Solver - Free Online Sudoku Game",
+    description: "Play Sudoku online for free! Challenge yourself with multiple difficulty levels.",
     images: ["/headshotExtended.jpg"],
   },
 };

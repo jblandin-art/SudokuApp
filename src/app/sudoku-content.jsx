@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import UserSudokuBoard from "../../../components/UserSudokuBoard";
-import AISudokuBoard from "../../../components/AISudokuBoard";
+import UserSudokuBoard from "../components/UserSudokuBoard";
+import AISudokuBoard from "../components/AISudokuBoard";
 
 export default function SudokuContent({ onLoadComplete, onLoadingStatusChange = null, onPuzzleSolved = null }) {
   const [aiLoading, setAiLoading] = useState(true);
