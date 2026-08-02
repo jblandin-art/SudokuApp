@@ -1,12 +1,24 @@
 // components/AuthWidget.jsx
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, type Dispatch, type SetStateAction } from "react";
+import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabaseClient";
 
-export default function AuthWidget({ puzzlesSolved: puzzlesSolvedProp = null, setPuzzlesSolved: setPuzzlesSolvedProp = null }) {
-  const [session, setSession] = useState(null);
-  const [localPuzzlesSolved, setLocalPuzzlesSolved] = useState(null);
-  const [leaderboard, setLeaderboard] = useState([]);
+interface AuthWidgetProps {
+  puzzlesSolved: number | null;
+  setPuzzlesSolved: Dispatch<SetStateAction<number | null>>;
+}
+
+type LeaderboardEntry = {
+  id: string | null;
+  username: string | null;
+  puzzles_solved: number | null;
+};
+
+export default function AuthWidget({ puzzlesSolved: puzzlesSolvedProp, setPuzzlesSolved: setPuzzlesSolvedProp }: AuthWidgetProps) {
+  const [session, setSession] = useState<Session | null>(null);
+  const [localPuzzlesSolved, setLocalPuzzlesSolved] = useState<number | null>(null);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [leaderboardOpen, setLeaderboardOpen] = useState(false);
   const [leaderboardLoading, setLeaderboardLoading] = useState(false);
   const [leaderboardError, setLeaderboardError] = useState("");

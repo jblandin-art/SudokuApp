@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono, Poppins, Playfair_Display, Inter } from "next/font/google";
 import "../styles/globals.css";
 import { ThemeProvider } from "@/components/theme-provider.jsx";
+import type { Metadata } from "next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,7 +33,7 @@ const inter = Inter({
 
 const siteUrl = "https://webpages.charlotte.edu/jblandin";
 
-export const metadata = {
+export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: "Sudoku Solver - Free Online Sudoku Game",
   description:
@@ -84,7 +85,9 @@ export const metadata = {
   },
 };
 
-export default function RootLayout({ children }) {
+export default function RootLayout({ children } : Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <html
       lang="en" suppressHydrationWarning

@@ -1,25 +1,48 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type Dispatch, type SetStateAction } from "react";
 import SudokuBoardBase from "./SudokuBoardBase";
 import { loadPyodideAndSudoku } from "./pyodideSudokuLoader";
+import AuthWidget from "@/components/AuthWidget";
 import { supabase } from "@/lib/supabaseClient";
 
 const STORAGE_KEY = "portfolio.sudoku.user-game";
 const SOLVED_PUZZLES_KEY = "portfolio.sudoku.solved-puzzles";
 
-function createEmptyGrid() {
-  return Array.from({ length: 9 }, () => Array(9).fill(0));
+type SudokuGrid = number[][];
+type BoardAction = "clear" | "new";
+type StatusChangeHandler = Dispatch<SetStateAction<string>>;
+type LoadCompleteHandler = Dispatch<SetStateAction<boolean>>;
+type LoadingChangeHandler = Dispatch<SetStateAction<boolean>>;
+type ValidateGridHandler = (grid: SudokuGrid) => Promise<boolean>;
+type SavedGame = {
+  seed: number;
+  grid: SudokuGrid;
+};
+type SudokuBoardBaseProps = {
+  puzzle: SudokuGrid | null;
+  solution: SudokuGrid | null;
+  initialGrid: SudokuGrid;
+  validateGrid: ValidateGridHandler | null;
+  onChange: (nextGrid: SudokuGrid) => void;
+  statusOverride: string | null;
+  validMessage: string;
+};
+
+const TypedSudokuBoardBase: any = SudokuBoardBase;
+
+function createEmptyGrid(): SudokuGrid {
+  return Array.from({ length: 9 }, () => Array(9).fill(0)) as SudokuGrid;
 }
 
-function isValidGridShape(grid) {
-  return Array.isArray(grid) && grid.length === 9 && grid.every((row) => Array.isArray(row) && row.length === 9);
+function isValidGridShape(grid: unknown): grid is SudokuGrid {
+  return Array.isArray(grid) && grid.length === 9 && grid.every((row): row is number[] => Array.isArray(row) && row.length === 9);
 }
 
-function isCompleteGrid(grid) {
+function isCompleteGrid(grid: unknown): grid is SudokuGrid {
   return isValidGridShape(grid) && grid.every((row) => row.every((value) => Number(value) > 0));
 }
 
-function readSolvedPuzzleKeys() {
+function readSolvedPuzzleKeys(): Set<string> {
   if (typeof window === "undefined") return new Set();
 
   try {
@@ -29,13 +52,13 @@ function readSolvedPuzzleKeys() {
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return new Set();
 
-    return new Set(parsed.filter((value) => typeof value === "string"));
+    return new Set(parsed.filter((value): value is string => typeof value === "string"));
   } catch {
     return new Set();
   }
 }
 
-function persistSolvedPuzzleKeys(keys) {
+function persistSolvedPuzzleKeys(keys: Set<string>) {
   if (typeof window === "undefined") return;
 
   try {
@@ -45,14 +68,14 @@ function persistSolvedPuzzleKeys(keys) {
   }
 }
 
-function readSavedGame() {
+function readSavedGame(): SavedGame | null {
   if (typeof window === "undefined") return null;
 
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
 
-    const parsed = JSON.parse(raw);
+    const parsed = JSON.parse(raw) as { seed?: unknown; grid?: unknown };
     if (typeof parsed?.seed !== "number" || !isValidGridShape(parsed?.grid)) {
       return null;
     }
@@ -66,24 +89,36 @@ function readSavedGame() {
   }
 }
 
-export default function UserSudokuBoard({ emptyCells = 45, seed, onLoadComplete, onLoadingChange = null, onLoadingStatusChange = null, onPuzzleSolved = null }) {
+interface UserSudokuBoardProps {
+  onLoadingStatusChange?: StatusChangeHandler;
+  onLoadComplete: LoadCompleteHandler;
+  onPuzzleSolved?: () => void;
+  onLoadingChange?: LoadingChangeHandler;
+  puzzlesSolved: number | null;
+  setPuzzlesSolved: Dispatch<SetStateAction<number | null>>;
+  emptyCells?: number;
+  seed?: number;
+}
+
+export default function UserSudokuBoard({ emptyCells = 45, seed, onLoadComplete, onLoadingChange, onLoadingStatusChange, onPuzzleSolved, puzzlesSolved, setPuzzlesSolved }: UserSudokuBoardProps) {
   const savedGame = readSavedGame();
   const [runtimeSeed, setRuntimeSeed] = useState(() => savedGame?.seed ?? seed ?? Math.floor(Math.random() * 1000000));
-  const [puzzle, setPuzzle] = useState(null);
-  const [solution, setSolution] = useState(null);
-  const [validateGrid, setValidateGrid] = useState(null);
+  const savedGridSnapshot = savedGame?.grid;
+  const [puzzle, setPuzzle] = useState<SudokuGrid | null>(null);
+  const [solution, setSolution] = useState<SudokuGrid | null>(null);
+  const [validateGrid, setValidateGrid] = useState<ValidateGridHandler | null>(null);
   const [showFillButton, setShowFillButton] = useState(false);
   const [isFilled, setIsFilled] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [boardLoading, setBoardLoading] = useState(true);
-  const [loadError, setLoadError] = useState(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [boardKey, setBoardKey] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
-  const [pendingAction, setPendingAction] = useState(null);
-  const [startingGrid, setStartingGrid] = useState(() => isValidGridShape(savedGame?.grid) ? savedGame.grid : createEmptyGrid());
-  const [savedGrid, setSavedGrid] = useState(() => isValidGridShape(savedGame?.grid) ? savedGame.grid : createEmptyGrid());
+  const [pendingAction, setPendingAction] = useState<BoardAction | null>(null);
+  const [startingGrid, setStartingGrid] = useState<SudokuGrid>(() => isValidGridShape(savedGridSnapshot) ? savedGridSnapshot : createEmptyGrid());
+  const [savedGrid, setSavedGrid] = useState<SudokuGrid>(() => isValidGridShape(savedGridSnapshot) ? savedGridSnapshot : createEmptyGrid());
   const [saveNoticeVisible, setSaveNoticeVisible] = useState(false);
-  const saveNoticeTimeoutRef = useRef(null);
+  const saveNoticeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const solvedPuzzleKeysRef = useRef(readSolvedPuzzleKeys());
   const solveRequestInFlightRef = useRef(false);
 
@@ -148,7 +183,7 @@ export default function UserSudokuBoard({ emptyCells = 45, seed, onLoadComplete,
     async function init() {
       setBoardLoading(true);
       onLoadingStatusChange && onLoadingStatusChange("Loading Sudoku runtime…");
-      const pyodide = await loadPyodideAndSudoku({ onStatusChange: onLoadingStatusChange });
+      const pyodide = await loadPyodideAndSudoku({ onStatusChange: onLoadingStatusChange as never });
       if (cancelled) return;
 
       onLoadingStatusChange && onLoadingStatusChange("Generating puzzle…");
@@ -157,7 +192,7 @@ export default function UserSudokuBoard({ emptyCells = 45, seed, onLoadComplete,
       );
       if (cancelled) return;
 
-      const jsPuzzle = JSON.parse(puzzleJson);
+      const jsPuzzle = JSON.parse(puzzleJson) as SudokuGrid;
       setPuzzle(jsPuzzle);
       onLoadingStatusChange && onLoadingStatusChange("Solving puzzle…");
       const solutionJson = await pyodide.runPythonAsync(
@@ -165,9 +200,9 @@ export default function UserSudokuBoard({ emptyCells = 45, seed, onLoadComplete,
       );
       if (cancelled) return;
 
-      setSolution(JSON.parse(solutionJson));
+      setSolution(JSON.parse(solutionJson) as SudokuGrid);
 
-      setValidateGrid(() => async (grid) => {
+      setValidateGrid(() => async (grid: SudokuGrid) => {
         const gridLiteral = JSON.stringify(grid).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
         const result = await pyodide.runPythonAsync(
           `import json\ncandidate_grid = json.loads('${gridLiteral}')\nis_valid_sudoku_grid(candidate_grid)`
@@ -196,7 +231,7 @@ export default function UserSudokuBoard({ emptyCells = 45, seed, onLoadComplete,
   }, [emptyCells, runtimeSeed, onLoadComplete]);
 
   useEffect(() => {
-    function handleKeyDown(event) {
+    function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "*" || event.code === "NumpadMultiply") {
         setShowFillButton((previous) => !previous);
       }
@@ -289,7 +324,7 @@ export default function UserSudokuBoard({ emptyCells = 45, seed, onLoadComplete,
     setPendingAction(null);
   }
 
-  function requestAction(action) {
+  function requestAction(action: BoardAction) {
     if (boardLoading || pendingAction) {
       return;
     }
@@ -313,7 +348,7 @@ export default function UserSudokuBoard({ emptyCells = 45, seed, onLoadComplete,
     onLoadComplete && onLoadComplete(false);
   }
 
-  function handleBoardChange(nextGrid) {
+  function handleBoardChange(nextGrid: SudokuGrid) {
     setSavedGrid(nextGrid);
 
     if (isCompleteGrid(nextGrid)) {
@@ -362,7 +397,7 @@ export default function UserSudokuBoard({ emptyCells = 45, seed, onLoadComplete,
             <div className="aspect-square w-full rounded-lg border border-purple-700/40 bg-black/80 shadow-[0_0_40px_rgba(168,85,247,0.1)] opacity-0" aria-hidden="true" />
             <div className={`absolute inset-0 transition-opacity duration-300 ease-out ${isVisible && !boardLoading ? "opacity-100" : "opacity-0"}`}>
               {boardLoading ? null : (
-                <SudokuBoardBase
+                <TypedSudokuBoardBase
                   key={boardKey}
                   puzzle={puzzle}
                   solution={isFilled ? solution : null}
@@ -437,6 +472,9 @@ export default function UserSudokuBoard({ emptyCells = 45, seed, onLoadComplete,
           </div>
         </div>
       ) : null}
+      <div className="mt-10 mb-15">
+        <AuthWidget puzzlesSolved={puzzlesSolved} setPuzzlesSolved={setPuzzlesSolved} />
+      </div>
       {!initialLoading ? (
         <section id="instructions" className="my-12">
         <h2 className="mb-3 text-lg font-semibold uppercase tracking-wider text-purple-200/95">How to Play</h2>

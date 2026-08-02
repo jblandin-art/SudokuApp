@@ -4,9 +4,16 @@ import { useEffect, useState } from "react";
 import UserSudokuBoard from "../components/UserSudokuBoard";
 import AISudokuBoard from "../components/AISudokuBoard";
 
-export default function SudokuContent({ onLoadComplete, onLoadingStatusChange = null, onPuzzleSolved = null }) {
+interface SudokuContentProps {
+  onLoadComplete: React.Dispatch<React.SetStateAction<boolean>>;
+  onLoadingStatusChange: React.Dispatch<React.SetStateAction<string>> | null;
+  onPuzzleSolved: React.Dispatch<React.SetStateAction<number | null>> | null;
+  puzzlesSolved: number | null;
+  setPuzzlesSolved: React.Dispatch<React.SetStateAction<number | null>>;
+}
+export default function SudokuContent({ onLoadComplete, onLoadingStatusChange = null, onPuzzleSolved = null, puzzlesSolved, setPuzzlesSolved }: SudokuContentProps) {
   const [aiLoading, setAiLoading] = useState(true);
-  const [userLoading, setUserLoading] = useState(true);
+  const [userLoading, setUserLoading] = useState<boolean>(true);
   const [userLoadingStatus, setUserLoadingStatus] = useState("Loading Sudoku runtime…");
   const [aiLoadingStatus, setAiLoadingStatus] = useState("Loading AI Sudoku runtime…");
 
@@ -19,7 +26,7 @@ export default function SudokuContent({ onLoadComplete, onLoadingStatusChange = 
   }, [onLoadingStatusChange, userLoading, userLoadingStatus]);
 
   return (
-    <main className="mx-auto max-w-5xl py-10 text-gray-200">
+    <>
       <div className={`mb-0 transition-opacity duration-300 ease-out ${userLoading ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
         <div className="mx-auto max-w-5xl py-6">
           <div className="mb-0 flex items-center gap-4">
@@ -35,7 +42,13 @@ export default function SudokuContent({ onLoadComplete, onLoadingStatusChange = 
         onLoadComplete={onLoadComplete}
         onLoadingChange={setUserLoading}
         onLoadingStatusChange={setUserLoadingStatus}
-        onPuzzleSolved={onPuzzleSolved}
+        puzzlesSolved={puzzlesSolved}
+        setPuzzlesSolved={setPuzzlesSolved}
+        onPuzzleSolved={
+          onPuzzleSolved
+            ? () => onPuzzleSolved((previous) => Number(previous ?? 0) + 1)
+            : undefined
+        }
       />
 {/*
       <div className={`mb-6 transition-opacity duration-300 ease-out ${aiLoading ? "opacity-0" : "opacity-100"}`}>
@@ -63,6 +76,6 @@ export default function SudokuContent({ onLoadComplete, onLoadingStatusChange = 
         onLoadingChange={setAiLoading}
         onLoadingStatusChange={setAiLoadingStatus}
       />
-    </main>
+      </>
   );
 }

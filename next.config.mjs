@@ -11,10 +11,8 @@ const nextConfig = {
     unoptimized: true,
   },
   trailingSlash: true,
-  basePath: "/jblandin",
-  assetPrefix: "/jblandin/",
   env: {
-    NEXT_PUBLIC_BASE_PATH: "/jblandin",
+    NEXT_PUBLIC_BASE_PATH: "",
   },
 };
 
