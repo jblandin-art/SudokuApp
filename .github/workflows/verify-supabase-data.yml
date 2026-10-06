@@ -16,6 +16,6 @@ jobs:
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
           curl --fail-with-body --show-error --silent \
-            "$SUPABASE_URL/rest/v1/profiles?select=id,email,username,puzzles_solved&limit=1" \
+            "$SUPABASE_URL/rest/v1/profiles?select=id,username,puzzles_solved&limit=1" \
             -H "apikey: $SUPABASE_ANON_KEY" \
             -H "Authorization: Bearer $SUPABASE_ANON_KEY"
