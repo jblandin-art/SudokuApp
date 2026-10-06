@@ -1,17 +1,21 @@
 name: Keep Supabase alive
+
 on:
   schedule:
-    - cron: '0 12 * * *'   # daily, noon UTC
+    - cron: "0 12 * * *"
   workflow_dispatch:
+
 jobs:
   ping:
     runs-on: ubuntu-latest
     environment: SUPABASE
     steps:
-      - run: |
-          curl -fsS "$SUPABASE_URL/rest/v1/keep_alive?select=id&limit=1" \
-            -H "apikey: $SUPABASE_ANON_KEY" \
-            -H "Authorization: Bearer $SUPABASE_ANON_KEY"
+      - name: Read keep-alive row
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          curl --fail-with-body --show-error --silent \
+            "$SUPABASE_URL/rest/v1/keep_alive?select=id&limit=1" \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY"
