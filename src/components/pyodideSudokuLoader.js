@@ -1,5 +1,6 @@
 let pyodideInitPromise = null;
 const PYODIDE_SCRIPT_LOAD_TIMEOUT_MS = 20000;
+const PYODIDE_BASE_URL = `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/pyodide/`;
 
 export async function loadPyodideAndSudoku({ onStatusChange = null } = {}) {
   const reportStatus = (message) => {
@@ -19,7 +20,7 @@ export async function loadPyodideAndSudoku({ onStatusChange = null } = {}) {
           }
 
           const script = document.createElement("script");
-          script.src = "https://cdn.jsdelivr.net/pyodide/v0.26.1/full/pyodide.js";
+          script.src = `${PYODIDE_BASE_URL}pyodide.js`;
           script.async = true;
           let timedOut = false;
           const timeoutId = window.setTimeout(() => {
@@ -45,7 +46,7 @@ export async function loadPyodideAndSudoku({ onStatusChange = null } = {}) {
         const loadPyodide = window.loadPyodide;
         // @ts-ignore
         reportStatus("Initializing Pyodide…");
-        globalThis.pyodide = await loadPyodide({ indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.1/full/" });
+        globalThis.pyodide = await loadPyodide({ indexURL: PYODIDE_BASE_URL });
         reportStatus("Loading numpy…");
         await globalThis.pyodide.loadPackage(["numpy"]);
 
